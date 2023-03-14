@@ -1,37 +1,27 @@
 import { useState } from 'react'
 import { useEffect } from 'react'
 import './App.css'
-import axios from 'axios'
+import Quote from './Quote'
+import useGetQuote from './hooks/useGetQuote'
+import useLocalStorage from './hooks/useLocalStorage'
 
-
+//Great Resource: https://usehooks.com - collection of custom react hooks
 function App() {
-  const [quoteData, setQuoteData] = useState("")
-
-  useEffect(() => {
-    axios.get("https://api.api-ninjas.com/v1/quotes", {
-      params: {
-        'limit': 1,
-      },
-      headers: {
-        'X-Api-Key': import.meta.env.VITE_API_KEY
-      },
-    }).then((res) => {
-      setQuoteData(res.data[0])
-    }).catch(err => {
-      console.log(err)
-      alert("Error getting the quote of the day...")
-    })
-
-  }, [])
-
+  const [currentQuote, setCurrentQuote] = useLocalStorage('new', 'new')
+  const [isToggled, setIsToggled] = useState(false)
 
   return (
     <div className="App">
-      <h1>The Quote of the day is:</h1>
-      {quoteData &&
+      <button onClick={e => setIsToggled(!isToggled)}>Toggle Activity</button><br />
+      {isToggled ?
+        <Quote /> :
         <>
-          <p className='quote'>"{quoteData.quote}"</p>
-          <p className='author-subject'>Spoken by {quoteData.author}</p>
+          <input
+            type="text"
+            value={currentQuote}
+            onChange={e => setCurrentQuote(e.target.value)}
+          />
+          <h2>{currentQuote}</h2>
         </>
       }
     </div >
